@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,6 +17,9 @@ import {
   IconButton,
   Box,
 } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import axios from 'axios';
 import BusinessIcon from '@mui/icons-material/Business';
 import PeopleIcon from '@mui/icons-material/People';
 import InventoryIcon from '@mui/icons-material/Inventory2';
@@ -32,10 +35,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 
-// Example user data; in a real app, replace with context or API data
+// Get email from localStorage
 const user = {
   name: "Owner User",
-  email: "owner@example.com",
+  email: localStorage.getItem('email') || "owner@example.com",
 };
 
 const drawerWidth = 260;
@@ -107,6 +110,14 @@ function OwnerDashboard() {
     crud: crudOptions[0].key,
   });
 
+  // Supplier CRUD states
+  const [suppliers, setSuppliers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [createForm, setCreateForm] = useState({ name: '', email: '', supplyItemDetails: '' });
+  const [updateForm, setUpdateForm] = useState({ id: '', name: '', email: '', supplyItemDetails: '' });
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -172,6 +183,79 @@ function OwnerDashboard() {
     mainOptions.find((o) => o.key === selected.main)?.label || '';
   const selectedCrudLabel =
     crudOptions.find((o) => o.key === selected.crud)?.label || '';
+
+  // Get token from localStorage
+  const token = localStorage.getItem('token');
+
+  // Fetch suppliers for Read
+  useEffect(() => {
+    if (selected.main === 'suppliers' && selected.crud === 'read') {
+      setLoading(true);
+      axios.get('http://localhost:8080/api/suppliers', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(res => {
+          setSuppliers(res.data);
+          setError('');
+        })
+        .catch(err => {
+          setError(err.response?.data?.message || 'Failed to fetch suppliers');
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [selected.main, selected.crud, token]);
+
+  // Create supplier
+  const handleCreateSupplier = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await axios.post('http://localhost:8080/api/suppliers', createForm, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSuccess('Supplier created successfully');
+      setCreateForm({ name: '', email: '', supplyItemDetails: '' });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create supplier');
+    }
+    setLoading(false);
+  };
+
+  // Update supplier
+  const handleUpdateSupplier = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await axios.put(`http://localhost:8080/api/suppliers/${updateForm.id}`, updateForm, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSuccess('Supplier updated successfully');
+      setUpdateForm({ id: '', name: '', email: '', supplyItemDetails: '' });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update supplier');
+    }
+    setLoading(false);
+  };
+
+  // Delete supplier
+  const handleDeleteSupplier = async (id) => {
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await axios.delete(`http://localhost:8080/api/suppliers/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSuccess('Supplier deleted successfully');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete supplier');
+    }
+    setLoading(false);
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -258,10 +342,67 @@ function OwnerDashboard() {
         </Typography>
         {/* The actual content for each section */}
         <Box mt={2}>
-          <Typography>
-            {/* Placeholder for selected CRUD operation */}
-            Content for <b>{selectedCrudLabel}</b> in <b>{selectedMainLabel}</b> goes here.
-          </Typography>
+          {/* Supplier CRUD UI */}
+          {selected.main === 'suppliers' && selected.crud === 'create' && (
+            <form onSubmit={handleCreateSupplier} style={{ maxWidth: 400 }}>
+              <Typography variant="h6" gutterBottom>Create Supplier</Typography>
+              <TextField label="Name" fullWidth required margin="normal" value={createForm.name} onChange={e => setCreateForm({ ...createForm, name: e.target.value })} />
+              <TextField label="Email" type="email" fullWidth required margin="normal" value={createForm.email} onChange={e => setCreateForm({ ...createForm, email: e.target.value })} />
+              <TextField label="Supply Item Details" fullWidth required margin="normal" value={createForm.supplyItemDetails} onChange={e => setCreateForm({ ...createForm, supplyItemDetails: e.target.value })} />
+              {error && <Typography color="error" variant="body2">{error}</Typography>}
+              {success && <Typography color="success.main" variant="body2">{success}</Typography>}
+              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }} disabled={loading}>Create</Button>
+            </form>
+          )}
+          {selected.main === 'suppliers' && selected.crud === 'read' && (
+            <Box>
+              <Typography variant="h6" gutterBottom>All Suppliers</Typography>
+              {loading ? <Typography>Loading...</Typography> : (
+                <>
+                  {error && <Typography color="error" variant="body2">{error}</Typography>}
+                  <ul style={{ paddingLeft: 0 }}>
+                    {suppliers.map(supplier => (
+                      <li key={supplier.id} style={{ marginBottom: 16, listStyle: 'none', border: '1px solid #eee', borderRadius: 8, padding: 12 }}>
+                        <Typography><b>Name:</b> {supplier.name}</Typography>
+                        <Typography><b>Email:</b> {supplier.email}</Typography>
+                        <Typography><b>Supply Item Details:</b> {supplier.supplyItemDetails}</Typography>
+                        <Button variant="outlined" color="primary" size="small" sx={{ mr: 1 }} onClick={() => setUpdateForm({ id: supplier.id, name: supplier.name, email: supplier.email, supplyItemDetails: supplier.supplyItemDetails })}>Edit</Button>
+                        <Button variant="outlined" color="error" size="small" onClick={() => handleDeleteSupplier(supplier.id)}>Delete</Button>
+                      </li>
+                    ))}
+                  </ul>
+                  {success && <Typography color="success.main" variant="body2">{success}</Typography>}
+                </>
+              )}
+            </Box>
+          )}
+          {selected.main === 'suppliers' && selected.crud === 'update' && (
+            <form onSubmit={handleUpdateSupplier} style={{ maxWidth: 400 }}>
+              <Typography variant="h6" gutterBottom>Update Supplier</Typography>
+              <TextField label="ID" fullWidth required margin="normal" value={updateForm.id} onChange={e => setUpdateForm({ ...updateForm, id: e.target.value })} />
+              <TextField label="Name" fullWidth required margin="normal" value={updateForm.name} onChange={e => setUpdateForm({ ...updateForm, name: e.target.value })} />
+              <TextField label="Email" type="email" fullWidth required margin="normal" value={updateForm.email} onChange={e => setUpdateForm({ ...updateForm, email: e.target.value })} />
+              <TextField label="Supply Item Details" fullWidth required margin="normal" value={updateForm.supplyItemDetails} onChange={e => setUpdateForm({ ...updateForm, supplyItemDetails: e.target.value })} />
+              {error && <Typography color="error" variant="body2">{error}</Typography>}
+              {success && <Typography color="success.main" variant="body2">{success}</Typography>}
+              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }} disabled={loading}>Update</Button>
+            </form>
+          )}
+          {selected.main === 'suppliers' && selected.crud === 'delete' && (
+            <Box>
+              <Typography variant="h6" gutterBottom>Delete Supplier</Typography>
+              <TextField label="Supplier ID" fullWidth required margin="normal" value={updateForm.id} onChange={e => setUpdateForm({ ...updateForm, id: e.target.value })} />
+              <Button variant="contained" color="error" sx={{ mt: 2 }} disabled={loading || !updateForm.id} onClick={() => handleDeleteSupplier(updateForm.id)}>Delete</Button>
+              {error && <Typography color="error" variant="body2">{error}</Typography>}
+              {success && <Typography color="success.main" variant="body2">{success}</Typography>}
+            </Box>
+          )}
+          {/* Default placeholder for other options */}
+          {!(selected.main === 'suppliers') && (
+            <Typography>
+              Content for <b>{selectedCrudLabel}</b> in <b>{selectedMainLabel}</b> goes here.
+            </Typography>
+          )}
         </Box>
       </Box>
     </Box>

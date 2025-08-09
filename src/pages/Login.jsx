@@ -80,9 +80,9 @@ export default function Login() {
       const { token } = response.data;
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
-      if (role === 'admin') navigate('/dashboard/admin');
-      else if (role === 'owner') navigate('/dashboard/owner');
-      else if (role === 'employee') navigate('/dashboard/employee');
+  if (role === 'admin') navigate('/dashboard/admin', { replace: true });
+  else if (role === 'owner') navigate('/dashboard/owner', { replace: true });
+  else if (role === 'employee') navigate('/dashboard/employee', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
