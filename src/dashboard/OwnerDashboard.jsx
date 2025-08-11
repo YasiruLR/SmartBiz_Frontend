@@ -345,29 +345,31 @@ function OwnerDashboard() {
           {/* Supplier CRUD UI */}
           {selected.main === 'suppliers' && selected.crud === 'create' && (
             <form onSubmit={handleCreateSupplier} style={{ maxWidth: 400 }}>
-              <Typography variant="h6" gutterBottom>Create Supplier</Typography>
-              <TextField label="Name" fullWidth required margin="normal" value={createForm.name} onChange={e => setCreateForm({ ...createForm, name: e.target.value })} />
-              <TextField label="Email" type="email" fullWidth required margin="normal" value={createForm.email} onChange={e => setCreateForm({ ...createForm, email: e.target.value })} />
-              <TextField label="Supply Item Details" fullWidth required margin="normal" value={createForm.supplyItemDetails} onChange={e => setCreateForm({ ...createForm, supplyItemDetails: e.target.value })} />
-              {error && <Typography color="error" variant="body2">{error}</Typography>}
-              {success && <Typography color="success.main" variant="body2">{success}</Typography>}
-              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }} disabled={loading}>Create</Button>
+              <Box sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)', boxShadow: 3 }}>
+                <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', fontWeight: 700 }}>Create Supplier</Typography>
+                <TextField label="Name" fullWidth required margin="normal" value={createForm.name} onChange={e => setCreateForm({ ...createForm, name: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                <TextField label="Email" type="email" fullWidth required margin="normal" value={createForm.email} onChange={e => setCreateForm({ ...createForm, email: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                <TextField label="Supply Item Details" fullWidth required margin="normal" value={createForm.supplyItemDetails} onChange={e => setCreateForm({ ...createForm, supplyItemDetails: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                {error && <Typography color="error" variant="body2">{error}</Typography>}
+                {success && <Typography color="success.main" variant="body2">{success}</Typography>}
+                <Button type="submit" variant="contained" sx={{ mt: 2, background: 'linear-gradient(90deg, #1976d2 60%, #64b5f6 100%)', fontWeight: 700, fontSize: 16, borderRadius: 2 }} disabled={loading}>Create</Button>
+              </Box>
             </form>
           )}
           {selected.main === 'suppliers' && selected.crud === 'read' && (
-            <Box>
-              <Typography variant="h6" gutterBottom>All Suppliers</Typography>
+            <Box sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #fceabb 0%, #f8b500 100%)', boxShadow: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ color: '#f57c00', fontWeight: 700 }}>All Suppliers</Typography>
               {loading ? <Typography>Loading...</Typography> : (
                 <>
                   {error && <Typography color="error" variant="body2">{error}</Typography>}
                   <ul style={{ paddingLeft: 0 }}>
                     {suppliers.map(supplier => (
-                      <li key={supplier.id} style={{ marginBottom: 16, listStyle: 'none', border: '1px solid #eee', borderRadius: 8, padding: 12 }}>
-                        <Typography><b>Name:</b> {supplier.name}</Typography>
-                        <Typography><b>Email:</b> {supplier.email}</Typography>
-                        <Typography><b>Supply Item Details:</b> {supplier.supplyItemDetails}</Typography>
-                        <Button variant="outlined" color="primary" size="small" sx={{ mr: 1 }} onClick={() => setUpdateForm({ id: supplier.id, name: supplier.name, email: supplier.email, supplyItemDetails: supplier.supplyItemDetails })}>Edit</Button>
-                        <Button variant="outlined" color="error" size="small" onClick={() => handleDeleteSupplier(supplier.id)}>Delete</Button>
+                      <li key={supplier.id} style={{ marginBottom: 16, listStyle: 'none', border: '1px solid #ffe082', background: '#fffde7', borderRadius: 8, padding: 12 }}>
+                        <Typography sx={{ color: '#1976d2' }}><b>Name:</b> {supplier.name}</Typography>
+                        <Typography sx={{ color: '#1976d2' }}><b>Email:</b> {supplier.email}</Typography>
+                        <Typography sx={{ color: '#1976d2' }}><b>Supply Item Details:</b> {supplier.supplyItemDetails}</Typography>
+                        <Button variant="outlined" color="primary" size="small" sx={{ mr: 1, borderRadius: 2 }} onClick={() => setUpdateForm({ id: supplier.id, name: supplier.name, email: supplier.email, supplyItemDetails: supplier.supplyItemDetails })}>Edit</Button>
+                        <Button variant="outlined" color="error" size="small" sx={{ borderRadius: 2 }} onClick={() => handleDeleteSupplier(supplier.id)}>Delete</Button>
                       </li>
                     ))}
                   </ul>
@@ -378,21 +380,23 @@ function OwnerDashboard() {
           )}
           {selected.main === 'suppliers' && selected.crud === 'update' && (
             <form onSubmit={handleUpdateSupplier} style={{ maxWidth: 400 }}>
-              <Typography variant="h6" gutterBottom>Update Supplier</Typography>
-              <TextField label="ID" fullWidth required margin="normal" value={updateForm.id} onChange={e => setUpdateForm({ ...updateForm, id: e.target.value })} />
-              <TextField label="Name" fullWidth required margin="normal" value={updateForm.name} onChange={e => setUpdateForm({ ...updateForm, name: e.target.value })} />
-              <TextField label="Email" type="email" fullWidth required margin="normal" value={updateForm.email} onChange={e => setUpdateForm({ ...updateForm, email: e.target.value })} />
-              <TextField label="Supply Item Details" fullWidth required margin="normal" value={updateForm.supplyItemDetails} onChange={e => setUpdateForm({ ...updateForm, supplyItemDetails: e.target.value })} />
-              {error && <Typography color="error" variant="body2">{error}</Typography>}
-              {success && <Typography color="success.main" variant="body2">{success}</Typography>}
-              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }} disabled={loading}>Update</Button>
+              <Box sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', boxShadow: 3 }}>
+                <Typography variant="h6" gutterBottom sx={{ color: '#6a1b9a', fontWeight: 700 }}>Update Supplier</Typography>
+                <TextField label="ID" fullWidth required margin="normal" value={updateForm.id} onChange={e => setUpdateForm({ ...updateForm, id: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                <TextField label="Name" fullWidth required margin="normal" value={updateForm.name} onChange={e => setUpdateForm({ ...updateForm, name: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                <TextField label="Email" type="email" fullWidth required margin="normal" value={updateForm.email} onChange={e => setUpdateForm({ ...updateForm, email: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                <TextField label="Supply Item Details" fullWidth required margin="normal" value={updateForm.supplyItemDetails} onChange={e => setUpdateForm({ ...updateForm, supplyItemDetails: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+                {error && <Typography color="error" variant="body2">{error}</Typography>}
+                {success && <Typography color="success.main" variant="body2">{success}</Typography>}
+                <Button type="submit" variant="contained" sx={{ mt: 2, background: 'linear-gradient(90deg, #6a1b9a 60%, #8ec5fc 100%)', fontWeight: 700, fontSize: 16, borderRadius: 2 }} disabled={loading}>Update</Button>
+              </Box>
             </form>
           )}
           {selected.main === 'suppliers' && selected.crud === 'delete' && (
-            <Box>
-              <Typography variant="h6" gutterBottom>Delete Supplier</Typography>
-              <TextField label="Supplier ID" fullWidth required margin="normal" value={updateForm.id} onChange={e => setUpdateForm({ ...updateForm, id: e.target.value })} />
-              <Button variant="contained" color="error" sx={{ mt: 2 }} disabled={loading || !updateForm.id} onClick={() => handleDeleteSupplier(updateForm.id)}>Delete</Button>
+            <Box sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #f8ffae 0%, #43cea2 100%)', boxShadow: 3, maxWidth: 400 }}>
+              <Typography variant="h6" gutterBottom sx={{ color: '#43cea2', fontWeight: 700 }}>Delete Supplier</Typography>
+              <TextField label="Supplier ID" fullWidth required margin="normal" value={updateForm.id} onChange={e => setUpdateForm({ ...updateForm, id: e.target.value })} sx={{ background: '#fff', borderRadius: 2 }} />
+              <Button variant="contained" color="error" sx={{ mt: 2, fontWeight: 700, fontSize: 16, borderRadius: 2, background: 'linear-gradient(90deg, #43cea2 60%, #f8ffae 100%)' }} disabled={loading || !updateForm.id} onClick={() => handleDeleteSupplier(updateForm.id)}>Delete</Button>
               {error && <Typography color="error" variant="body2">{error}</Typography>}
               {success && <Typography color="success.main" variant="body2">{success}</Typography>}
             </Box>
